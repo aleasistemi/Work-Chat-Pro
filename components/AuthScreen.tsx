@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, USERS_LIST, DEFAULT_PIN } from '../types';
-import { ShieldCheck, User as UserIcon } from 'lucide-react';
+import { ShieldCheck, User as UserIcon, Download } from 'lucide-react';
 
 interface AuthScreenProps {
   onLogin: (user: User) => void;
@@ -10,6 +10,30 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
   const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [pin, setPin] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      // Previene la barra automatica di Chrome (opzionale)
+      e.preventDefault();
+      // Salva l'evento per attivarlo col bottone
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallClick = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        }
+        setDeferredPrompt(null);
+      });
+    }
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +109,20 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
             Accedi al Terminale
           </button>
         </form>
+
+        {deferredPrompt && (
+          <div className="mt-6 pt-6 border-t border-gray-200">
+             <button 
+                type="button"
+                onClick={handleInstallClick}
+                className="w-full flex items-center justify-center gap-2 bg-slate-800 text-white py-3 rounded-xl hover:bg-slate-700 transition-colors shadow-lg"
+             >
+               <Download className="w-5 h-5" />
+               Installa App sul PC
+             </button>
+             <p className="text-center text-xs text-gray-400 mt-2">Per notifiche desktop e avvio rapido</p>
+          </div>
+        )}
     </div>
   );
 };
