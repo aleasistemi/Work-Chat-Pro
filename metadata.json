@@ -1,0 +1,7 @@
+{
+  "name": "WorkChat Pro",
+  "description": "Internal workplace communication tool with instant messaging, voice notes, file sharing, and AI-powered smart replies.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
