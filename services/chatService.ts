@@ -35,8 +35,10 @@ try {
     console.log("✅ Firebase WorkChat Ufficio connesso");
     
     // Gestione resilienza rete (opzionale ma utile per PC ufficio che vanno in standby)
-    window.addEventListener('online', () => enableNetwork(db));
-    window.addEventListener('offline', () => disableNetwork(db));
+    if (typeof window !== 'undefined') {
+        window.addEventListener('online', () => enableNetwork(db));
+        window.addEventListener('offline', () => disableNetwork(db));
+    }
 
 } catch (e) {
     console.error("Errore critico inizializzazione Firebase:", e);
@@ -58,7 +60,11 @@ export const sendMessage = async (message: Message) => {
 
   // 2. Invio reale
   try {
-    await addDoc(collection(db, COLLECTION_NAME), message);
+    // FIX CRITICO: Firebase esplode se riceve campi 'undefined'.
+    // Usiamo questo trucco per pulire l'oggetto rimuovendo i campi undefined (es. fileName quando è testo)
+    const cleanMessage = JSON.parse(JSON.stringify(message));
+
+    await addDoc(collection(db, COLLECTION_NAME), cleanMessage);
   } catch (e: any) {
     console.error("Errore invio messaggio su Firebase:", e);
     
