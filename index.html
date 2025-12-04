@@ -4,26 +4,52 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WorkChat Pro</title>
+    <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
       body {
         font-family: 'Inter', sans-serif;
-        background-color: transparent; /* Allows desktop-like overlay feel if used in electron later */
-        background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000');
-        background-size: cover;
-        background-position: center;
+        background-color: transparent; /* TRASPARENTE: Per sembrare un widget desktop */
         height: 100vh;
         width: 100vw;
         overflow: hidden;
       }
-      /* Custom scrollbar for chat */
+      /* FONDAMENTALE: Il root non cattura i click, così puoi cliccare 'attraverso' l'app sul desktop sotto */
+      #root {
+        pointer-events: none;
+        height: 100%;
+        width: 100%;
+      }
+      /* Riabilita il click SOLO sui bottoni e finestre */
+      .pointer-events-auto {
+        pointer-events: auto;
+      }
+      
+      /* Nasconde scrollbar brutte ma permette scroll */
       .scrollbar-hide::-webkit-scrollbar {
           display: none;
       }
       .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
+      }
+
+      /* Animazioni fluide */
+      @keyframes slide-in-right {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      .animate-slide-in-right {
+        animation: slide-in-right 0.4s ease-out forwards;
+      }
+
+      @keyframes fade-in-up {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      .animate-fade-in-up {
+        animation: fade-in-up 0.3s ease-out forwards;
       }
     </style>
   <script type="importmap">
@@ -33,7 +59,10 @@
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js",
+    "firebase/": "https://aistudiocdn.com/firebase@^12.6.0/"
   }
 }
 </script>
